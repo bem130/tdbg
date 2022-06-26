@@ -6,6 +6,22 @@
         for (i=0;i<100;i++) {
             blks[Math.floor(Math.random()*y)][Math.floor(Math.random()*x)][Math.floor(Math.random()*z)] = Math.floor(Math.random()*4)+1
         }
+        blkd = [
+            [],
+            [[],[0,1,1,1,1],[0,1,1,1,1],[0,1,1,1,1],[0,1,1,1,1],[0,1,1,1,1],[0,1,1,1,1]],
+            [[],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0]],
+            [[],[0,1,1,0,0],[0,1,1,0,0],[0,1,1,0,0],[0,1,1,0,0],[0,1,1,0,0],[0,1,1,0,0]],
+            [[],[0,1,0,0,0],[0,1,0,0,0],[0,1,0,0,0],[0,1,0,0,0],[0,1,0,0,0],[0,1,0,0,0]],
+        ]
+        for (let ly=0;ly<y;ly++) {
+            for (let lx=0;lx<x;lx++) {
+                for (let lz=0;lz<z;lz++) {
+                    if (blkd[ly]!=null&&blkd[ly][lx]!=null&&blkd[ly][lx][lz]!=null&&blkd[ly][lx][lz]!=0) {
+                        blks[ly][lx][lz] = 1
+                    }
+                }
+            }
+        }
         for (let ly=0;ly<y;ly++) {
             for (let lx=0;lx<x;lx++) {
                 blks[ly][lx][0] = 1

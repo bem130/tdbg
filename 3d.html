@@ -152,7 +152,7 @@ let plyr_stat = [
     [0,0,0], //plyr position [x,y,z] (block)
     [false,0,0], //jumping started-frame started-height
 ]
-cam_h = 1.3
+cam_h = 2.5
 
 let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),displayscale]
         "112 63": [112,63,16,9],
@@ -437,12 +437,12 @@ function eachchange(arr,mx,my,mz,rz) {
         let cy = plyr_stat[0][1];
         let cz = plyr_stat[0][2];
         if (flmove[Math.floor(cy)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)][Math.floor(cz)]==0) {
-            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz+0.1)]==0)) {
                 plyr_stat[0][1] = bfy
             }
         }
         if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
-            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz+0.1)]==0)) {
                 plyr_stat[0][0] = bfx
             }
         }
