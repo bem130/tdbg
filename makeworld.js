@@ -6,6 +6,11 @@
         for (i=0;i<20;i++) {
             blks[Math.floor(Math.random()*y)][Math.floor(Math.random()*x)][Math.floor(Math.random()*z)] = 0
         }
+        for (let ly=0;ly<y;ly++) {
+            for (let lx=0;lx<x;lx++) {
+                blks[ly][lx][0] = 0
+            }
+        }
     }
 
     function datato3d() {

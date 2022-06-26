@@ -49,14 +49,14 @@
                                 <td><button onclick="move(-0.3)" style="width: 100%;">↓</button></td>
                             </tr>
                             <tr>
-                                <td><button onclick="cam_property[1][0]-=7" style="width: 100%;">←</button></td>
+                                <td><button onclick="cam_prop[1][0]-=7" style="width: 100%;">←</button></td>
                                 <td><center>左右</center></td>
-                                <td><button onclick="cam_property[1][0]+=7" style="width: 100%;">→</button></td>
+                                <td><button onclick="cam_prop[1][0]+=7" style="width: 100%;">→</button></td>
                             </tr>
                             <tr>
-                                <td><button onclick="cam_property[1][1]+=3" style="width: 100%;">↑</button></td>
+                                <td><button onclick="cam_prop[1][1]+=3" style="width: 100%;">↑</button></td>
                                 <td><center>上下</center></td>
-                                <td><button onclick="cam_property[1][1]-=3" style="width: 100%;">↓</button></td>
+                                <td><button onclick="cam_prop[1][1]-=3" style="width: 100%;">↓</button></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -108,8 +108,8 @@ function startmaze() {
     changescene("game");
     drsel.value = "VGA";
     despl();
-    cam_property[0] = [1.2,1.2,0.7];
-    cam_property[1] = [45,0,10];
+    plyr_stat[0] = [1.2,1.2,5 ];
+    cam_prop[1] = [45,0,10];
     illumination = [40,10,50];
     document.getElementById("startmenu_area").style.visibility = "hidden";
     document.getElementById("control_area").style.visibility = "visible";
@@ -122,8 +122,8 @@ function startmenu() {
     despl();
     changescene("title");
     illumination = [40,10,20];
-    cam_property[0] = [1,-4,1.3];
-    cam_property[1] = [242,2,10];
+    plyr_stat[0] = [1,-4,0.5];
+    cam_prop[1] = [242,2,5];
     scene[scenename][1] = addLen(scene[scenename][1]);
     scene[scenename][1] = sortP(scene[scenename][1]);
     document.getElementById("control_area").style.visibility = "hidden";
@@ -137,13 +137,17 @@ window.onload = function() {
 }
 
 var flmove = [[]]
-let cam_property = [
+let cam_prop = [
     [0,0,0], //camera position [x,y,z] (block)
     [0,0,0], //camera angle [h,v,scale] (degree)
     [10,10],
     [640,480], //display
 ]
-
+let plyr_stat = [
+    [0,0,0], //plyr position [x,y,z] (block)
+    [false,0,0], //jumping started-frame started-height
+]
+cam_h = 0.7
 
 let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),displayscale]
         "112 63": [112,63,16,9],
@@ -169,17 +173,17 @@ let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),disp
         for (i=0;i<dlkeys.length;i++) {
             oel = document.createElement("option");
             if (i==0) {
-                cam_property[3] = display_list[dlkeys[i]];
+                cam_prop[3] = display_list[dlkeys[i]];
             }
             oel.value = dlkeys[i];
             oel.textContent = dlkeys[i];
             drsel.appendChild(oel);
         }
         drsel.value = "VGA";
-        cam_property[3] = display_list[drsel.value];
+        cam_prop[3] = display_list[drsel.value];
         resizeImg();
         function despl() {
-            cam_property[3] = display_list[drsel.value];
+            cam_prop[3] = display_list[drsel.value];
             resizeImg();
         };
     }
@@ -187,6 +191,7 @@ let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),disp
     {
         function changescene(name) {
             cframe = 0;
+            bff = true;
             scenename = name;
             if (scene[scenename]!=null) {
                 fobj = scene[scenename][1];
@@ -236,8 +241,8 @@ function eachchange(arr,mx,my,mz,rz) {
     var ctx = co.getContext('2d');
     function mkimg() {
         cframe++;
-        x = cam_property[3][0];
-        y = cam_property[3][1];
+        x = cam_prop[3][0];
+        y = cam_prop[3][1];
         co.height=y;co.width=x;
         let iarr = new Uint8ClampedArray(x*y*4);
         let zbuf = new Uint8Array(x*y).fill(0);
@@ -267,9 +272,9 @@ function eachchange(arr,mx,my,mz,rz) {
             angl = VIProduct(vl,normal); // 0<=normal<=1
             light = (Math.max(angl,angl*0.2)*0.9+0.4)*(200/(polygons[i][7]+200));
             
-            xmax = Math.min(Math.max(p1[0],p2[0],p3[0]),cam_property[3][0]);
+            xmax = Math.min(Math.max(p1[0],p2[0],p3[0]),cam_prop[3][0]);
             xmin = Math.max(Math.min(p1[0],p2[0],p3[0]),0);
-            ymax = Math.min(Math.max(p1[1],p2[1],p3[1]),cam_property[3][1]);
+            ymax = Math.min(Math.max(p1[1],p2[1],p3[1]),cam_prop[3][1]);
             ymin = Math.max(Math.min(p1[1],p2[1],p3[1]),0);
 
             dp = [p1,p2,p3];
@@ -294,7 +299,7 @@ function eachchange(arr,mx,my,mz,rz) {
         fps = (Date.now() - startTime) / 1000;
         startTime = Date.now();
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
-        setTimeout(mkimg,10);
+        setTimeout(mkimg,100);
     }
 
     function sortP(ps) {
@@ -322,7 +327,7 @@ function eachchange(arr,mx,my,mz,rz) {
     
     function addLen(ps) {
         for (let i=0;i<ps.length;i++) {
-            ps[i][7] = squared_length3d([cam_property[0],gcot([ps[i][0],ps[i][1],ps[i][2]])]);
+            ps[i][7] = squared_length3d([cam_prop[0],gcot([ps[i][0],ps[i][1],ps[i][2]])]);
         }
         return ps
     }
@@ -367,13 +372,13 @@ function eachchange(arr,mx,my,mz,rz) {
     };
 
     function pos_3t2d(pos) { // get angle of camera and point
-        let cp = cam_property[0];let ca = cam_property[1];
+        let cp = cam_prop[0];let ca = cam_prop[1];
         let p1 = [pos[0]-cp[0],pos[1]-cp[1],pos[2]-cp[2]];
         p1 = rotate3d_z(p1,ca[0]);
         p1 = rotate3d_x(p1,-ca[1]);
         let l = Math.abs(14/(p1[1]));
-        let s = cam_property[3][0]/15;
-        let d = [p1[0]*l*s+cam_property[3][0]/2,-p1[2]*l*s+cam_property[3][1]/2];
+        let s = cam_prop[3][0]/15;
+        let d = [p1[0]*l*s+cam_prop[3][0]/2,-p1[2]*l*s+cam_prop[3][1]/2];
         let infront = false;
         if (p1[1]<0) {infront = true };
         return [Math.floor(d[0]),Math.floor(d[1]),infront];
@@ -417,26 +422,26 @@ function eachchange(arr,mx,my,mz,rz) {
     }
 
     function move(l) {
-        los = rotate2d([0,l],-cam_property[1][0]);
-        bfx = cam_property[0][0];
-        bfy = cam_property[0][1];
-        bfz = cam_property[0][2];
-        cam_property[0][0] += los[0];
-        cam_property[0][1] += los[1];
-        let cx = cam_property[0][0];
-        let cy = cam_property[0][1];
-        let cz = cam_property[0][2];
+        los = rotate2d([0,l],-cam_prop[1][0]);
+        bfx = plyr_stat[0][0];
+        bfy = plyr_stat[0][1];
+        bfz = plyr_stat[0][2];
+        plyr_stat[0][0] += los[0];
+        plyr_stat[0][1] += los[1];
+        let cx = plyr_stat[0][0];
+        let cy = plyr_stat[0][1];
+        let cz = plyr_stat[0][2];
         if (flmove[Math.floor(cy)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)][Math.floor(cz)]==0) {
             if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
-                cam_property[0][1] = bfy
+                plyr_stat[0][1] = bfy
             }
         }
         if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
             if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
-                cam_property[0][0] = bfx
+                plyr_stat[0][0] = bfx
             }
         }
-        document.getElementById("show_pos").innerHTML = Math.floor(cam_property[0][0]*100)/100+","+Math.floor(cam_property[0][1]*100)/100
+        document.getElementById("show_pos").innerHTML = Math.floor(plyr_stat[0][0]*100)/100+","+Math.floor(plyr_stat[0][1]*100)/100
         
     }
 
@@ -497,10 +502,10 @@ let keyw = {} // 通常
 {
     keyw[87] = ()=>move(0.2);
     keyw[83] = ()=>move(-0.2);
-    keyw[65] = ()=>cam_property[1][0]-=5;
-    keyw[68] = ()=>cam_property[1][0]+=5;
-    keyw[82] = ()=>cam_property[1][1]+=2;
-    keyw[70] = ()=>cam_property[1][1]-=2;
+    keyw[65] = ()=>cam_prop[1][0]-=5;
+    keyw[68] = ()=>cam_prop[1][0]+=5;
+    keyw[82] = ()=>cam_prop[1][1]+=2;
+    keyw[70] = ()=>cam_prop[1][1]-=2;
     keyw[27] = function() {
         if (scenename=="game") {
             startmenu();
@@ -511,10 +516,10 @@ let keyw_s = {} // shift押し中
 {
     keyw_s[87] = ()=>move(0.8);
     keyw_s[83] = ()=>move(-0.8);
-    keyw_s[65] = ()=>cam_property[1][0]-=8;
-    keyw_s[68] = ()=>cam_property[1][0]+=8;
-    keyw_s[82] = ()=>cam_property[1][1]+=4;
-    keyw_s[70] = ()=>cam_property[1][1]-=4;
+    keyw_s[65] = ()=>cam_prop[1][0]-=8;
+    keyw_s[68] = ()=>cam_prop[1][0]+=8;
+    keyw_s[82] = ()=>cam_prop[1][1]+=4;
+    keyw_s[70] = ()=>cam_prop[1][1]-=4;
 }
 let keyw_f = {} // イベント取得時
 {
@@ -550,12 +555,66 @@ function keyinput() {
         }
     }
 }
-setInterval(keyinput,60)
+setInterval(action,60)
+
+
+bff = true; // 前フレームで床があるか
+acfr = 0;
+function action() {
+    keyinput();
+
+
+    acfr++;
+
+    cam_prop[0][0] = plyr_stat[0][0] // カメラの設定
+    cam_prop[0][1] = plyr_stat[0][1] // カメラの設定
+    cam_prop[0][2] = plyr_stat[0][2] + cam_h // カメラの設定
+
+    bfx = plyr_stat[0][0];
+    bfy = plyr_stat[0][1];
+    bfz = plyr_stat[0][2];
+    if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz-0.001)]==0)) { // 床があるか
+        // 床がない
+        console.log("no floor")
+        if (plyr_stat[1][0]) {
+            // ジャンプしている => ジャンプ
+        }
+        else {
+            // ジャンプしてない => 落下
+            if (bff) {
+                plyr_stat[1][1] = acfr
+                plyr_stat[1][2] = bfz
+                console.log("lost the floor")
+            }
+            let nfrm = acfr - plyr_stat[1][1]
+            console.log(nfrm)
+            plyr_stat[0][2] = -(0.01*(nfrm**2)) +plyr_stat[1][2]
+        }
+
+        bff = false;
+    }
+    else {
+        // 床がある
+        if (bff==false) {
+            console.log("get on the floor")
+        }
+        bff = true;
+    }
+    if ((flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) { // 床に埋まっているか
+        plyr_stat[0][2] = Math.floor(plyr_stat[0][2])+1
+    }
+}
+
+// if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
+//     if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+//         plyr_stat[0][0] = bfx
+//     }
+// }
 
 // resize window
     function resizeImg() {
-        dw = cam_property[3][0];
-        dh = cam_property[3][1];
+        dw = cam_prop[3][0];
+        dh = cam_prop[3][1];
         let bottom_area = 0;
         let rw = 0;let rh = 0;
         let ww = window.innerWidth;
