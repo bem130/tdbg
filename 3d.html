@@ -96,10 +96,10 @@ var illumination = [0,0,1]
 var gamestarttime = Date.now()
 
 function startnew() {
-    worldsize = [10,10]
-    makeworld(worldsize[0],worldsize[1]);
+    worldsize = [10,10,5]
+    makeworld(worldsize[0],worldsize[1],worldsize[2]);
     flmove = blks
-    worldstart = [1,1];
+    worldstart = [1,1,1];
     datato3d();
 }
 
@@ -420,15 +420,21 @@ function eachchange(arr,mx,my,mz,rz) {
         los = rotate2d([0,l],-cam_property[1][0]);
         bfx = cam_property[0][0];
         bfy = cam_property[0][1];
+        bfz = cam_property[0][2];
         cam_property[0][0] += los[0];
         cam_property[0][1] += los[1];
         let cx = cam_property[0][0];
         let cy = cam_property[0][1];
-        if (cy<flmove.length&&bfx<flmove[0].length&&flmove[Math.floor(cy)][Math.floor(bfx)]==0) {
-            cam_property[0][1] = bfy
+        let cz = cam_property[0][2];
+        if (flmove[Math.floor(cy)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)][Math.floor(cz)]==0) {
+            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+                cam_property[0][1] = bfy
+            }
         }
-        if (bfy<flmove.length&&cx<flmove[0].length&&flmove[Math.floor(bfy)][Math.floor(cx)]==0) {
-            cam_property[0][0] = bfx
+        if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
+            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+                cam_property[0][0] = bfx
+            }
         }
         document.getElementById("show_pos").innerHTML = Math.floor(cam_property[0][0]*100)/100+","+Math.floor(cam_property[0][1]*100)/100
         
@@ -525,9 +531,8 @@ function keyinput() {
     keys = Object.keys(keystatus_d);
     for (i=0;i<keys.length;i++) {
         if (keystatus_d[keys[i]]) {
-            console.log(keys[i])
+            // console.log(keys[i])
             if (keystatus_d[16]) {
-                console.log("shift")
                 if (keys[i] in keyw_s) {
                     keyw_s[keys[i]]();
                 }
