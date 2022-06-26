@@ -78,7 +78,6 @@
                     <ul style="width: 100%;padding: 0;margin: 0;">
                         <li style="display: inline-block;"><center><p>FPS: <span id="show_fps"></span></p></center></li>
                         <li style="display: inline-block;"><center><p>座標: <span id="show_pos"></span></p></center></li>
-                        <li style="display: inline-block;"><center><p>ゴールまでの距離<span id="len_togoal"></span></p></center></li>
                     </ul>
                 </div>
             </center>
@@ -91,6 +90,12 @@
 <script src="obj.js"></script>
 <script src="makeworld.js"></script>
 <script>
+
+function tick() {
+    action()
+    action()
+    mkimg()
+}
 
 var illumination = [0,0,1]
 var gamestarttime = Date.now()
@@ -270,7 +275,7 @@ function eachchange(arr,mx,my,mz,rz) {
             v13 = [t[2][0]-t[0][0],t[2][1]-t[0][1],t[2][2]-t[0][2]];
             normal = VNormalized(VCProduct(v12,v13)); //法線
             angl = VIProduct(vl,normal); // 0<=normal<=1
-            light = (Math.max(angl,angl*0.2)*0.9+0.4)*(200/(polygons[i][7]+200));
+            light = (Math.max(angl,angl*0.2)*0.9+0.4)*(500/(polygons[i][7]+500));
             
             xmax = Math.min(Math.max(p1[0],p2[0],p3[0]),cam_prop[3][0]);
             xmin = Math.max(Math.min(p1[0],p2[0],p3[0]),0);
@@ -299,7 +304,7 @@ function eachchange(arr,mx,my,mz,rz) {
         fps = (Date.now() - startTime) / 1000;
         startTime = Date.now();
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
-        setTimeout(mkimg,100);
+        setTimeout(tick,10);
     }
 
     function sortP(ps) {
@@ -502,10 +507,10 @@ let keyw = {} // 通常
 {
     keyw[87] = ()=>move(0.2);
     keyw[83] = ()=>move(-0.2);
-    keyw[65] = ()=>cam_prop[1][0]-=5;
-    keyw[68] = ()=>cam_prop[1][0]+=5;
-    keyw[82] = ()=>cam_prop[1][1]+=2;
-    keyw[70] = ()=>cam_prop[1][1]-=2;
+    keyw[65] = ()=>cam_prop[1][0]-=2;
+    keyw[68] = ()=>cam_prop[1][0]+=2;
+    keyw[82] = ()=>cam_prop[1][1]+=1;
+    keyw[70] = ()=>cam_prop[1][1]-=1;
     keyw[32] = function() {
         if (scenename=="game") {
             plyr_stat[1][0] = true;
@@ -524,10 +529,10 @@ let keyw_s = {} // shift押し中
 {
     keyw_s[87] = ()=>move(0.8);
     keyw_s[83] = ()=>move(-0.8);
-    keyw_s[65] = ()=>cam_prop[1][0]-=8;
-    keyw_s[68] = ()=>cam_prop[1][0]+=8;
-    keyw_s[82] = ()=>cam_prop[1][1]+=4;
-    keyw_s[70] = ()=>cam_prop[1][1]-=4;
+    keyw[65] = ()=>cam_prop[1][0]-=5;
+    keyw[68] = ()=>cam_prop[1][0]+=5;
+    keyw[82] = ()=>cam_prop[1][1]+=2;
+    keyw[70] = ()=>cam_prop[1][1]-=2;
 }
 let keyw_f = {} // イベント取得時
 {
@@ -558,16 +563,23 @@ function keyinput() {
         }
     }
 }
-setInterval(action,60)
-
 
 bff = true; // 前フレームで床があるか
 acfr = 0;
 function action() {
     keyinput();
 
-    acfr+=0.5;
-    for (c=0;c<5;c++) {
+    fall()
+    
+    cam_prop[0][0] = plyr_stat[0][0] // カメラの設定
+    cam_prop[0][1] = plyr_stat[0][1] // カメラの設定
+    cam_prop[0][2] = plyr_stat[0][2] + cam_h // カメラの設定
+}
+
+function fall() {
+    
+    for (c=0;c<3;c++) {
+        acfr+=0.2;
         bfx = plyr_stat[0][0];
         bfy = plyr_stat[0][1];
         bfz = plyr_stat[0][2];
@@ -610,17 +622,8 @@ function action() {
             bff = true;
         }
     }
-    
-    cam_prop[0][0] = plyr_stat[0][0] // カメラの設定
-    cam_prop[0][1] = plyr_stat[0][1] // カメラの設定
-    cam_prop[0][2] = plyr_stat[0][2] + cam_h // カメラの設定
 }
 
-// if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
-//     if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
-//         plyr_stat[0][0] = bfx
-//     }
-// }
 
 // resize window
     function resizeImg() {
