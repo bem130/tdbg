@@ -49,7 +49,7 @@
                         c = blkcs[blks[ly][lx][lz]];
                         console.log(blks[ly][lx][lz])
                         // 上面
-                        if (!(lx>0&&blks[ly][lx][lz+1]!=0)) {
+                        if (!(lx>0&&blks[ly][lx][lz+1]!=0)||blks[ly][lx][lz+1]==null) {
                             fmaze.push([[lx,ly,lz+1],[lx+1,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
                             fmaze.push([[lx,ly+1,lz+1],[lx,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
                         }
