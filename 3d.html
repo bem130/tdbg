@@ -59,6 +59,11 @@
                                 <td><button onclick="cam_prop[1][1]-=3" style="width: 100%;">↓</button></td>
                             </tr>
                             <tr>
+                                <td><button onclick="cam_prop[2][0]+=5" style="width: 100%;">↑</button></td>
+                                <td><center>視野角</center></td>
+                                <td><button onclick="cam_prop[2][0]-=5" style="width: 100%;">↓</button></td>
+                            </tr>
+                            <tr>
                                 <td></td>
                                 <td><center>解像度</center></td>
                                 <td>
@@ -103,7 +108,7 @@ var gamestarttime = Date.now()
 var f_fall = true;
 
 function startnew() {
-    worldsize = [20,20,5]
+    worldsize = [25,25,10]
     makeworld(worldsize[0],worldsize[1],worldsize[2]);
     flmove = makeflmove(blks)
     worldstart = [1,1,1];
@@ -115,7 +120,7 @@ function startgame() {
     changescene("game");
     drsel.value = "VGA";
     despl();
-    plyr_stat[0] = [1.2,1.2,5 ];
+    plyr_stat[0] = [1.2,1.2,20];
     cam_prop[1] = [45,0,10];
     illumination = [40,10,50];
     document.getElementById("startmenu_area").style.visibility = "hidden";
@@ -142,14 +147,14 @@ function startmenu() {
 
 window.onload = function() {
     startmenu();
-    setTimeout(mkimg,10);
+    setTimeout(mkimg,100);
 }
 
 var flmove = [[]]
 let cam_prop = [
     [0,0,0], //camera position [x,y,z] (block)
     [0,0,0], //camera angle [h,v,scale] (degree)
-    [10,10],
+    [20], // view angle
     [640,480], //display
 ]
 let plyr_stat = [
@@ -279,7 +284,7 @@ function eachchange(arr,mx,my,mz,rz) {
             v13 = [t[2][0]-t[0][0],t[2][1]-t[0][1],t[2][2]-t[0][2]];
             normal = VNormalized(VCProduct(v12,v13)); //法線
             angl = VIProduct(vl,normal); // 0<=normal<=1
-            light = (Math.max(angl,angl*0.2)*0.9+0.4)*(500/(polygons[i][7]+500));
+            light = (Math.max(angl,angl*0.2)*0.9+0.4)*(1000/(polygons[i][7]+1000));
             
             xmax = Math.min(Math.max(p1[0],p2[0],p3[0]),cam_prop[3][0]);
             xmin = Math.max(Math.min(p1[0],p2[0],p3[0]),0);
@@ -308,7 +313,7 @@ function eachchange(arr,mx,my,mz,rz) {
         fps = (Date.now() - startTime) / 1000;
         startTime = Date.now();
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
-        setTimeout(tick,10);
+        setTimeout(tick,20);
     }
 
     function sortP(ps) {
@@ -386,7 +391,7 @@ function eachchange(arr,mx,my,mz,rz) {
         p1 = rotate3d_z(p1,ca[0]);
         p1 = rotate3d_x(p1,-ca[1]);
         let l = Math.abs(14/(p1[1]));
-        let s = cam_prop[3][0]/15;
+        let s = cam_prop[3][0]/cam_prop[2][0];
         let d = [p1[0]*l*s+cam_prop[3][0]/2,-p1[2]*l*s+cam_prop[3][1]/2];
         let infront = false;
         if (p1[1]<0) {infront = true };
@@ -430,30 +435,6 @@ function eachchange(arr,mx,my,mz,rz) {
         return [x,y];
     }
 
-    function move(l) {
-        los = rotate2d([0,l],-cam_prop[1][0]);
-        bfx = plyr_stat[0][0];
-        bfy = plyr_stat[0][1];
-        bfz = plyr_stat[0][2];
-        plyr_stat[0][0] += los[0];
-        plyr_stat[0][1] += los[1];
-        let cx = plyr_stat[0][0];
-        let cy = plyr_stat[0][1];
-        let cz = plyr_stat[0][2];
-        if (flmove[Math.floor(cy)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)][Math.floor(cz)]==0) {
-            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz+0.1)]==0)) {
-                plyr_stat[0][1] = bfy
-            }
-        }
-        if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
-            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz+0.1)]==0)) {
-                plyr_stat[0][0] = bfx
-            }
-        }
-        document.getElementById("show_pos").innerHTML = Math.floor(plyr_stat[0][0]*100)/100+", "+Math.floor(plyr_stat[0][1]*100)/100+", "+Math.floor(plyr_stat[0][2]*100)/100
-        document.getElementById("show_pos_m").innerHTML = Math.floor(plyr_stat[0][0]*100*0.64)/100+", "+Math.floor(plyr_stat[0][1]*100*0.64)/100+", "+Math.floor(plyr_stat[0][2]*100*0.64)/100
-        
-    }
 
     function sin(z) {
         return Math.sin(z);
@@ -510,8 +491,8 @@ document.onkeyup = function(e) {
 
 let keyw = {} // 通常
 {
-    keyw[87] = ()=>move(0.2);
-    keyw[83] = ()=>move(-0.2);
+    keyw[87] = ()=>move(0.1);
+    keyw[83] = ()=>move(-0.1);
     keyw[65] = ()=>cam_prop[1][0]-=2;
     keyw[68] = ()=>cam_prop[1][0]+=2;
     keyw[82] = ()=>cam_prop[1][1]+=1;
@@ -532,8 +513,8 @@ let keyw = {} // 通常
 }
 let keyw_s = {} // shift押し中
 {
-    keyw_s[87] = ()=>move(0.8);
-    keyw_s[83] = ()=>move(-0.8);
+    keyw_s[87] = ()=>move(0.4);
+    keyw_s[83] = ()=>move(-0.4);
     keyw[65] = ()=>cam_prop[1][0]-=5;
     keyw[68] = ()=>cam_prop[1][0]+=5;
     keyw[82] = ()=>cam_prop[1][1]+=2;
@@ -576,14 +557,47 @@ function action() {
 
     fall()
     
+    if (cam_prop[2][0]<5) {
+        cam_prop[2][0] = 5;
+    }
+    else if (cam_prop[2][0]>100) {
+        cam_prop[2][0] = 100;
+    }
     cam_prop[0][0] = plyr_stat[0][0] // カメラの設定
     cam_prop[0][1] = plyr_stat[0][1] // カメラの設定
     cam_prop[0][2] = plyr_stat[0][2] + cam_h // カメラの設定
+    
+    // 座標の表示
+    document.getElementById("show_pos").innerHTML = Math.floor(plyr_stat[0][0]*100)/100+", "+Math.floor(plyr_stat[0][1]*100)/100+", "+Math.floor(plyr_stat[0][2]*100)/100
+    document.getElementById("show_pos_m").innerHTML = Math.floor(plyr_stat[0][0]*100*0.64)/100+", "+Math.floor(plyr_stat[0][1]*100*0.64)/100+", "+Math.floor(plyr_stat[0][2]*100*0.64)/100
+}
+
+function move(l) {
+    los = rotate2d([0,l],-cam_prop[1][0]);
+    bfx = plyr_stat[0][0];
+    bfy = plyr_stat[0][1];
+    bfz = plyr_stat[0][2];
+    plyr_stat[0][0] += los[0];
+    plyr_stat[0][1] += los[1];
+    let cx = plyr_stat[0][0];
+    let cy = plyr_stat[0][1];
+    let cz = plyr_stat[0][2];
+    if (flmove[Math.floor(cy)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)]!=null&&flmove[Math.floor(cy)][Math.floor(bfx)][Math.floor(cz)]==0) {
+        if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+            plyr_stat[0][1] = bfy
+        }
+    }
+    if (flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)]!=null&&flmove[Math.floor(bfy)][Math.floor(cx)][Math.floor(cz)]==0) {
+        if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) {
+            plyr_stat[0][0] = bfx
+        }
+    }
+    
 }
 
 function fall() {
     if (f_fall) {
-        for (c=0;c<3;c++) {
+        for (c=0;c<5;c++) {
             acfr+=0.2;
             bfx = plyr_stat[0][0];
             bfy = plyr_stat[0][1];
@@ -617,7 +631,8 @@ function fall() {
             }
             else {
                 // 床がある
-                if (bff==false) {
+                if ((flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) { // 床に埋まっているか
+                    plyr_stat[0][2] = Math.floor(plyr_stat[0][2])+1;
                 }
                 bff = true;
             }
