@@ -2,7 +2,6 @@
     var blks = []
     function makeworld(x,y,z) { // size x,y,z
         blks = Array.from(Array(y),_=>Array.from(Array(x),_=>Array(z).fill(0)));
-        console.log(blks)
         for (i=0;i<100;i++) {
             blks[Math.floor(Math.random()*y)][Math.floor(Math.random()*x)][Math.floor(Math.random()*z)] = Math.floor(Math.random()*4)+1
         }
@@ -47,14 +46,14 @@
                 for(let lz=0;lz<z;lz++) {
                     if (blks[ly][lx][lz]!=0) {
                         c = blkcs[blks[ly][lx][lz]];
-                        console.log(blks[ly][lx][lz])
+                        // console.log(blks[ly][lx][lz])
                         // 上面
                         if (!(lx>0&&blks[ly][lx][lz+1]!=0)||blks[ly][lx][lz+1]==null) {
                             fmaze.push([[lx,ly,lz+1],[lx+1,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
                             fmaze.push([[lx,ly+1,lz+1],[lx,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
                         }
                         // 底面
-                        if (!(lx>0&&blks[ly][lx][lz-1]!=0)) {
+                        if (!(lx>0&&blks[ly][lx][lz-1]!=0)||blks[ly][lx][lz-1]==null) {
                             fmaze.push([[lx,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
                             fmaze.push([[lx,ly+1,lz+0],[lx+1,ly+1,lz+0],[lx,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
                         }

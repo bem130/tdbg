@@ -77,7 +77,8 @@
                 <div id="control">
                     <ul style="width: 100%;padding: 0;margin: 0;">
                         <li style="display: inline-block;"><center><p>FPS: <span id="show_fps"></span></p></center></li>
-                        <li style="display: inline-block;"><center><p>座標: <span id="show_pos"></span></p></center></li>
+                        <li style="display: inline-block;"><center><p>座標: <span id="show_pos"></span> Block</p></center></li>
+                        <li style="display: inline-block;"><center><p>座標: <span id="show_pos_m"></span> M</p></center></li>
                     </ul>
                 </div>
             </center>
@@ -99,6 +100,7 @@ function tick() {
 
 var illumination = [0,0,1]
 var gamestarttime = Date.now()
+var f_fall = true;
 
 function startnew() {
     worldsize = [20,20,5]
@@ -119,15 +121,17 @@ function startgame() {
     document.getElementById("startmenu_area").style.visibility = "hidden";
     document.getElementById("control_area").style.visibility = "visible";
     document.getElementById("information_area").style.visibility = "visible";
-    gamestarttime = Date.now()
+    gamestarttime = Date.now();
+    f_fall = true;
 }
 
 function startmenu() {
+    f_fall = false;
     drsel.value = "HD";
     despl();
     changescene("title");
     illumination = [40,10,20];
-    plyr_stat[0] = [1,-4,0.5];
+    plyr_stat[0] = [1,-4,-1];
     cam_prop[1] = [242,2,5];
     scene[scenename][1] = addLen(scene[scenename][1]);
     scene[scenename][1] = sortP(scene[scenename][1]);
@@ -446,7 +450,8 @@ function eachchange(arr,mx,my,mz,rz) {
                 plyr_stat[0][0] = bfx
             }
         }
-        document.getElementById("show_pos").innerHTML = Math.floor(plyr_stat[0][0]*100)/100+","+Math.floor(plyr_stat[0][1]*100)/100
+        document.getElementById("show_pos").innerHTML = Math.floor(plyr_stat[0][0]*100)/100+", "+Math.floor(plyr_stat[0][1]*100)/100+", "+Math.floor(plyr_stat[0][2]*100)/100
+        document.getElementById("show_pos_m").innerHTML = Math.floor(plyr_stat[0][0]*100*0.64)/100+", "+Math.floor(plyr_stat[0][1]*100*0.64)/100+", "+Math.floor(plyr_stat[0][2]*100*0.64)/100
         
     }
 
@@ -577,44 +582,45 @@ function action() {
 }
 
 function fall() {
-    
-    for (c=0;c<3;c++) {
-        acfr+=0.2;
-        bfx = plyr_stat[0][0];
-        bfy = plyr_stat[0][1];
-        bfz = plyr_stat[0][2];
-        if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz-0.01)]==0) || plyr_stat[1][0]) {
-            // 床があるか ジャンプ
-            if (plyr_stat[1][0]) {
-                // ジャンプしている => ジャンプ
-                if (bff) {
-                    plyr_stat[1][1] = acfr;
-                    plyr_stat[1][2] = bfz;
+    if (f_fall) {
+        for (c=0;c<3;c++) {
+            acfr+=0.2;
+            bfx = plyr_stat[0][0];
+            bfy = plyr_stat[0][1];
+            bfz = plyr_stat[0][2];
+            if (!(flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz-0.01)]==0) || plyr_stat[1][0]) {
+                // 床があるか ジャンプ
+                if (plyr_stat[1][0]) {
+                    // ジャンプしている => ジャンプ
+                    if (bff) {
+                        plyr_stat[1][1] = acfr;
+                        plyr_stat[1][2] = bfz;
+                    }
+                    let nfrm = acfr - plyr_stat[1][1];
+                    plyr_stat[0][2] = -(0.05*((nfrm-4.898 )**2)) +plyr_stat[1][2] + 1.2;
                 }
-                let nfrm = acfr - plyr_stat[1][1];
-                plyr_stat[0][2] = -(0.05*((nfrm-4.898 )**2)) +plyr_stat[1][2] + 1.2;
+                else {
+                    // ジャンプしてない => 落下
+                    if (bff) {
+                        plyr_stat[1][1] = acfr;
+                        plyr_stat[1][2] = bfz;
+                    }
+                    let nfrm = acfr - plyr_stat[1][1];
+                    plyr_stat[0][2] = -(0.05*(nfrm**2)) +plyr_stat[1][2];
+                }
+
+                if ((flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) { // 床に埋まっているか
+                    plyr_stat[0][2] = Math.floor(plyr_stat[0][2])+1;
+                    plyr_stat[1][0] = false;
+                }
+                bff = false;
             }
             else {
-                // ジャンプしてない => 落下
-                if (bff) {
-                    plyr_stat[1][1] = acfr;
-                    plyr_stat[1][2] = bfz;
+                // 床がある
+                if (bff==false) {
                 }
-                let nfrm = acfr - plyr_stat[1][1];
-                plyr_stat[0][2] = -(0.05*(nfrm**2)) +plyr_stat[1][2];
+                bff = true;
             }
-
-            if ((flmove[Math.floor(bfy)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)]!=null&&flmove[Math.floor(bfy)][Math.floor(bfx)][Math.floor(bfz)]==0)) { // 床に埋まっているか
-                plyr_stat[0][2] = Math.floor(plyr_stat[0][2])+1;
-                plyr_stat[1][0] = false;
-            }
-            bff = false;
-        }
-        else {
-            // 床がある
-            if (bff==false) {
-            }
-            bff = true;
         }
     }
 }
