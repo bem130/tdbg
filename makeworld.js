@@ -38,7 +38,6 @@
         x = blks[0].length;
         y = blks.length;
         z = blks[0][0].length;
-        objid = 1
         scene["game"] = [[0],[]];
         fmaze = scene["game"][1];
         for (let ly=0;ly<y;ly++) {
@@ -49,39 +48,40 @@
                         // console.log(blks[ly][lx][lz])
                         // 上面
                         if (!(lx>0&&blks[ly][lx][lz+1]!=0)||blks[ly][lx][lz+1]==null) {
-                            fmaze.push([[lx,ly,lz+1],[lx+1,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
-                            fmaze.push([[lx,ly+1,lz+1],[lx,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
+                            fmaze.push([[lx,ly,lz+1],[lx+1,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
+                            fmaze.push([[lx,ly+1,lz+1],[lx,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
                         }
                         // 底面
                         if (!(lx>0&&blks[ly][lx][lz-1]!=0)||blks[ly][lx][lz-1]==null) {
-                            fmaze.push([[lx,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
-                            fmaze.push([[lx,ly+1,lz+0],[lx+1,ly+1,lz+0],[lx,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[objid]])
+                            fmaze.push([[lx,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
+                            fmaze.push([[lx,ly+1,lz+0],[lx+1,ly+1,lz+0],[lx,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
                         }
                         // 横面
                         if (!(lx>0&&blks[ly][lx-1][lz]!=0)) {
-                            fmaze.push([[lx,ly,lz+0],[lx,ly,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
-                            fmaze.push([[lx,ly,lz+1],[lx,ly+1,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
+                            fmaze.push([[lx,ly,lz+0],[lx,ly,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx,ly,lz+1],[lx,ly+1,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
                         }
                         
                         if (!(ly<y-1&&blks[ly+1][lx][lz]!=0)) {
-                            fmaze.push([[lx,ly+1,lz+0],[lx,ly+1,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
-                            fmaze.push([[lx+1,ly+1,lz+0],[lx,ly+1,lz+0],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
+                            fmaze.push([[lx,ly+1,lz+0],[lx,ly+1,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx+1,ly+1,lz+0],[lx,ly+1,lz+0],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
                         }
                         
                         if (!(lx<x-1&&blks[ly][lx+1][lz]!=0)) {
-                            fmaze.push([[lx+1,ly+1,lz+0],[lx+1,ly+1,lz+1],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
-                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
+                            fmaze.push([[lx+1,ly+1,lz+0],[lx+1,ly+1,lz+1],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
                         }
                         
                         if (!(ly>0&&blks[ly-1][lx][lz]!=0)) {
-                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly,lz+1],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
-                            fmaze.push([[lx,ly,lz+0],[lx+1,ly,lz+0],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[objid]]);
+                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly,lz+1],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx,ly,lz+0],[lx+1,ly,lz+0],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
                         }
     
                     }
                 }
             }
         }
+        console.log(fmaze)
     }
 
     function makeflmove(blks) {
