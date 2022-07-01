@@ -112,7 +112,7 @@ var f_fall = true;
 var selectpos = [null,null,null]
 
 function startnew() {
-    worldsize = [15,15,10]
+    worldsize = [20,20,10]
     makeworld(worldsize[0],worldsize[1],worldsize[2]);
     makeflmove()
     worldstart = [1,1,1];
@@ -465,7 +465,7 @@ function eachchange(arr,mx,my,mz,rz) {
         let s = cam_prop[3][0]/cam_prop[2][0];
         let d = [p1[0]*l*s+cam_prop[3][0]/2,-p1[2]*l*s+cam_prop[3][1]/2];
         let infront = false;
-        if (p1[1]<0) {infront = true };
+        if (p1[1]<0.5) {infront = true };
         return [Math.floor(d[0]),Math.floor(d[1]),infront];
     }
 
