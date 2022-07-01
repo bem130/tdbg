@@ -49,14 +49,14 @@
                                 <td><button onclick="move(-0.3)" style="width: 100%;">↓</button></td>
                             </tr>
                             <tr>
-                                <td><button onclick="cam_prop[1][0]-=7" style="width: 100%;">←</button></td>
+                                <td><button onclick="updateangle(-7,0)" style="width: 100%;">←</button></td>
                                 <td><center>左右</center></td>
-                                <td><button onclick="cam_prop[1][0]+=7" style="width: 100%;">→</button></td>
+                                <td><button onclick="updateangle(7,0)" style="width: 100%;">→</button></td>
                             </tr>
                             <tr>
-                                <td><button onclick="cam_prop[1][1]+=3" style="width: 100%;">↑</button></td>
+                                <td><button onclick="updateangle(0,-3)" style="width: 100%;">↑</button></td>
                                 <td><center>上下</center></td>
-                                <td><button onclick="cam_prop[1][1]-=3" style="width: 100%;">↓</button></td>
+                                <td><button onclick="updateangle(0,3)" style="width: 100%;">↓</button></td>
                             </tr>
                             <tr>
                                 <td><button onclick="cam_prop[2][0]+=5" style="width: 100%;">↑</button></td>
@@ -97,7 +97,13 @@
 <script src="makeworld.js"></script>
 <script>
 
+
+
+
+
+
 function tick() {
+    viewangle()
     action()
     action()
     mkimg()
@@ -145,10 +151,30 @@ function startmenu() {
     document.getElementById("startmenu_area").style.visibility = "visible";
 }
 
+let cnvs = document.getElementById("imgOut");
 window.onload = function() {
     startmenu();
     setTimeout(mkimg,100);
+    cnvs.requestPointerLock = cnvs.requestPointerLock || cnvs.mozRequestPointerLock;
+    document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
 }
+cnvs.onclick = function() {
+    cnvs.requestPointerLock();
+}
+document.addEventListener('pointerlockchange', lockChangeAlert, false);
+document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+
+function lockChangeAlert() {
+  if (document.pointerLockElement === cnvs ||
+      document.mozPointerLockElement === cnvs) {
+    console.log('The pointer lock status is now locked');
+    document.addEventListener("mousemove", updatePosition, false);
+  } else {
+    console.log('The pointer lock status is now unlocked');  
+    document.removeEventListener("mousemove", updatePosition, false);
+  }
+}
+
 
 var flmove = [[]]
 let cam_prop = [
@@ -176,7 +202,7 @@ let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),disp
         "UXGA": [1600,1200,4,3],
         "FHD": [1920,1080,16,9],
         "4K": [3840,2160,16,9],
-       // "8K": [7680,4320,16,9],
+        "8K": [7680,4320,16,9],
     };
 
     var drsel;
@@ -493,10 +519,10 @@ let keyw = {} // 通常
 {
     keyw[87] = ()=>move(0.1);
     keyw[83] = ()=>move(-0.1);
-    keyw[65] = ()=>cam_prop[1][0]-=2;
-    keyw[68] = ()=>cam_prop[1][0]+=2;
-    keyw[82] = ()=>cam_prop[1][1]+=1;
-    keyw[70] = ()=>cam_prop[1][1]-=1;
+    keyw[65] = ()=>updateangle(-2,0);
+    keyw[68] = ()=>updateangle(2,0);
+    keyw[82] = ()=>updateangle(0,-2);
+    keyw[70] = ()=>updateangle(0,2);
     keyw[32] = function() {
         if (scenename=="game") {
             plyr_stat[1][0] = true;
@@ -505,7 +531,7 @@ let keyw = {} // 通常
             startnew();startgame();
         }
     }
-    keyw[27] = function() {
+    keyw[114] = function() {
         if (scenename=="game") {
             startmenu();
         }
@@ -515,10 +541,10 @@ let keyw_s = {} // shift押し中
 {
     keyw_s[87] = ()=>move(0.4);
     keyw_s[83] = ()=>move(-0.4);
-    keyw[65] = ()=>cam_prop[1][0]-=5;
-    keyw[68] = ()=>cam_prop[1][0]+=5;
-    keyw[82] = ()=>cam_prop[1][1]+=2;
-    keyw[70] = ()=>cam_prop[1][1]-=2;
+    keyw[65] = ()=>updateangle(-5,0);
+    keyw[68] = ()=>updateangle(5,0);
+    keyw[82] = ()=>updateangle(0,-4);
+    keyw[70] = ()=>updateangle(0,4);
 }
 let keyw_f = {} // イベント取得時
 {
@@ -530,7 +556,7 @@ function keyinput() {
     keys = Object.keys(keystatus_d);
     for (i=0;i<keys.length;i++) {
         if (keystatus_d[keys[i]]) {
-            // console.log(keys[i])
+             console.log(keys[i])
             if (keystatus_d[16]) {
                 if (keys[i] in keyw_s) {
                     keyw_s[keys[i]]();
@@ -570,6 +596,23 @@ function action() {
     // 座標の表示
     document.getElementById("show_pos").innerHTML = Math.floor(plyr_stat[0][0]*100)/100+", "+Math.floor(plyr_stat[0][1]*100)/100+", "+Math.floor(plyr_stat[0][2]*100)/100
     document.getElementById("show_pos_m").innerHTML = Math.floor(plyr_stat[0][0]*100*0.64)/100+", "+Math.floor(plyr_stat[0][1]*100*0.64)/100+", "+Math.floor(plyr_stat[0][2]*100*0.64)/100
+}
+function viewangle() {
+    cam_prop[1][0] = (ptX)
+    cam_prop[1][1] = (ptY)
+}
+let ptX=0;ptY=0;
+function updatePosition(e) { // マウスでの視点の変更
+    updateangle(e.movementX*0.3,e.movementY*0.2)
+}
+function updateangle(x,y) {
+  ptX += x;
+  ptX = (ptX+360)%360
+
+  if (Math.abs(ptY-y)<90) {
+    ptY -= y;
+  }
+  console.log("view angle:"+[ptX,ptY])
 }
 
 function move(l) {
