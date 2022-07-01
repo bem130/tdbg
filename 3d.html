@@ -125,8 +125,9 @@ function startgame() {
     drsel.value = "VGA";
     despl();
     plyr_stat[0] = [1.2,1.2,20];
-    cam_prop[1] = [45,0,10];
     illumination = [40,10,50];
+    ptX = 45;
+    ptY = 0;
     document.getElementById("startmenu_area").style.visibility = "hidden";
     document.getElementById("control_area").style.visibility = "visible";
     document.getElementById("information_area").style.visibility = "visible";
@@ -135,13 +136,19 @@ function startgame() {
 }
 
 function startmenu() {
+    document.exitPointerLock();
     f_fall = false;
     drsel.value = "HD";
     despl();
     changescene("title");
     illumination = [40,10,20];
     plyr_stat[0] = [1,-4,-1];
-    cam_prop[1] = [242,2,5];
+    cam_prop[1] = [242,2,10];
+    cam_prop[0][0] = plyr_stat[0][0] // カメラの設定
+    cam_prop[0][1] = plyr_stat[0][1] // カメラの設定
+    cam_prop[0][2] = plyr_stat[0][2] + cam_h // カメラの設定
+    cam_prop[1][0] = 251
+    cam_prop[1][1] = 0
     scene[scenename][1] = addLen(scene[scenename][1]);
     scene[scenename][1] = sortP(scene[scenename][1]);
     document.getElementById("control_area").style.visibility = "hidden";
@@ -157,7 +164,9 @@ window.onload = function() {
     document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
 }
 cnvs.onclick = function() {
-    cnvs.requestPointerLock();
+    if (scenename=="game") {
+        cnvs.requestPointerLock();
+    }
 }
 document.addEventListener('pointerlockchange', lockChangeAlert, false);
 document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
