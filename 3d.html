@@ -93,7 +93,7 @@
 <script>
     var scene = {};
 </script>
-<script src="obj.js"></script>
+<script src="object.js"></script>
 <script src="makeworld.js"></script>
 <script>
 
@@ -107,6 +107,7 @@ function tick() {
 var illumination = [0,0,1]
 var gamestarttime = Date.now()
 var f_fall = true;
+var selectpos = [0,0,0]
 
 function startnew() {
     worldsize = [15,15,10]
@@ -278,8 +279,10 @@ function eachchange(arr,mx,my,mz,rz) {
         cframe++;
         x = cam_prop[3][0];
         y = cam_prop[3][1];
+        center_index = (Math.floor(y/2)*x+Math.floor(x/2))*4;
         co.height=y;co.width=x;
         let iarr = new Uint8ClampedArray(x*y*4);
+        let blkps = new Uint8ClampedArray(x*y*4);
         let zbuf = new Uint8Array(x*y).fill(0);
         for (let i = 0; i < x*y; i++) {
             let index = (i)*4; // index of position [ix,iy]
@@ -324,15 +327,26 @@ function eachchange(arr,mx,my,mz,rz) {
                                 iarr[index+0] = t[4][0]*light;
                                 iarr[index+1] = t[5][0]*light;
                                 iarr[index+2] = t[6][0]*light;
+
+                                blkps[index+0] = t[8][0];
+                                blkps[index+1] = t[8][1];
+                                blkps[index+2] = t[8][2];
                             }
                         }
                     }
                 }
             }
         }
+        {
+                                iarr[center_index+0] = 0;
+                                iarr[center_index+1] = 0;
+                                iarr[center_index+2] = 0;
+        }
         ctx.putImageData(new ImageData(iarr,x,y),0,0);
         fps = (Date.now() - startTime) / 1000;
         startTime = Date.now();
+        console.log(blkps[center_index+0],blkps[center_index+1],blkps[center_index+2])
+        selectpos = [blkps[center_index+0],blkps[center_index+1],blkps[center_index+2]]
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
         setTimeout(tick,20);
     }
@@ -551,7 +565,7 @@ function keyinput() {
     keys = Object.keys(keystatus_d);
     for (i=0;i<keys.length;i++) {
         if (keystatus_d[keys[i]]) {
-             console.log(keys[i])
+            // console.log(keys[i])
             if (keystatus_d[16]) {
                 if (keys[i] in keyw_s) {
                     keyw_s[keys[i]]();
@@ -607,7 +621,24 @@ function updateangle(x,y) {
   if (Math.abs(ptY-y)<90) {
     ptY -= y;
   }
-  console.log("view angle:"+[ptX,ptY])
+  // console.log("view angle:"+[ptX,ptY])
+}
+
+document.addEventListener('mouseup', logMouseButton); // マウスのボタン
+
+function logMouseButton(e) {
+  if (typeof e === 'object') {
+    switch (e.button) {
+      case 0:
+        break;
+      case 1:
+        break;
+      case 2:
+        console.log("right btn")
+        console.log("break:" +selectpos)
+        break;
+    }
+  }
 }
 
 function move(l) {
