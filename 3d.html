@@ -167,18 +167,21 @@ cnvs.onclick = function() {
         cnvs.requestPointerLock();
     }
 }
-document.addEventListener('pointerlockchange', lockChangeAlert, false);
-document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
 
-function lockChangeAlert() {
-  if (document.pointerLockElement === cnvs ||
-      document.mozPointerLockElement === cnvs) {
-    console.log('The pointer lock status is now locked');
-    document.addEventListener("mousemove", updatePosition, false);
-  } else {
-    console.log('The pointer lock status is now unlocked');  
-    document.removeEventListener("mousemove", updatePosition, false);
-  }
+
+document.addEventListener('pointerlockchange', lockChangeAlert);
+document.addEventListener('mozpointerlockchange', lockChangeAlert);
+document.onmousemove = updatePosition
+
+var mspos = false
+function lockChangeAlert(e) {
+    if (document.pointerLockElement === cnvs || document.mozPointerLockElement === cnvs) {
+        mspos = true
+    } else {
+        mspos = false
+        updatePosition(e)
+    }
+    console.log()
 }
 
 
@@ -384,7 +387,7 @@ function eachchange(arr,mx,my,mz,rz) {
             selectpos = [null,null,null]
         }
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
-        setTimeout(tick,20);
+        setTimeout(tick,30);
     }
 
     function sortP(ps) {
@@ -650,8 +653,19 @@ function viewangle() {
     cam_prop[1][1] = (ptY)
 }
 let ptX=0;ptY=0;
+var bfm = null
 function updatePosition(e) { // マウスでの視点の変更
-    updateangle(e.movementX*0.3,e.movementY*0.2)
+    // console.log(mspos)
+    if (mspos) {
+        bfm = e
+        // console.log(e.movementX,e.movementY)
+        updateangle(e.movementX*0.3,e.movementY*0.2)
+    }
+    else if (bfm!=null) {
+        // console.log(-bfm.movementX,-bfm.movementY)
+        updateangle(-bfm.movementX*0.3,-bfm.movementY*0.2)
+        bfm = null
+    }
 }
 function updateangle(x,y) {
   ptX += x;

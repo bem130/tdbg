@@ -48,33 +48,33 @@
                         // console.log(blks[ly][lx][lz])
                         // 上面
                         if (!(lx>0&&blks[ly][lx][lz+1]!=0)||blks[ly][lx][lz+1]==null) {
-                            fmaze.push([[lx,ly,lz+1],[lx+1,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
-                            fmaze.push([[lx,ly+1,lz+1],[lx,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
+                            fmaze.push([[lx,ly,lz+1],[lx+1,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,0,1]])
+                            fmaze.push([[lx,ly+1,lz+1],[lx,ly,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,0,1]])
                         }
                         // 底面
                         if (!(lx>0&&blks[ly][lx][lz-1]!=0)||blks[ly][lx][lz-1]==null) {
-                            fmaze.push([[lx,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
-                            fmaze.push([[lx,ly+1,lz+0],[lx+1,ly+1,lz+0],[lx,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]])
+                            fmaze.push([[lx,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,0,-1]])
+                            fmaze.push([[lx,ly+1,lz+0],[lx+1,ly+1,lz+0],[lx,ly,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,0,-1]])
                         }
                         // 横面
                         if (!(lx>0&&blks[ly][lx-1][lz]!=0)) {
-                            fmaze.push([[lx,ly,lz+0],[lx,ly,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
-                            fmaze.push([[lx,ly,lz+1],[lx,ly+1,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx,ly,lz+0],[lx,ly,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[-1,0,0]]);
+                            fmaze.push([[lx,ly,lz+1],[lx,ly+1,lz+1],[lx,ly+1,lz+0],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[-1,0,0]]);
                         }
                         
                         if (!(ly<y-1&&blks[ly+1][lx][lz]!=0)) {
-                            fmaze.push([[lx,ly+1,lz+0],[lx,ly+1,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
-                            fmaze.push([[lx+1,ly+1,lz+0],[lx,ly+1,lz+0],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx,ly+1,lz+0],[lx,ly+1,lz+1],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,1,0]]);
+                            fmaze.push([[lx+1,ly+1,lz+0],[lx,ly+1,lz+0],[lx+1,ly+1,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,1,0]]);
                         }
                         
                         if (!(lx<x-1&&blks[ly][lx+1][lz]!=0)) {
-                            fmaze.push([[lx+1,ly+1,lz+0],[lx+1,ly+1,lz+1],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
-                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx+1,ly+1,lz+0],[lx+1,ly+1,lz+1],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[1,0,0]]);
+                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly+1,lz+0],[lx+1,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[1,0,0]]);
                         }
                         
                         if (!(ly>0&&blks[ly-1][lx][lz]!=0)) {
-                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly,lz+1],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
-                            fmaze.push([[lx,ly,lz+0],[lx+1,ly,lz+0],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz]]);
+                            fmaze.push([[lx+1,ly,lz+0],[lx+1,ly,lz+1],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,-1,0]]);
+                            fmaze.push([[lx,ly,lz+0],[lx+1,ly,lz+0],[lx,ly,lz+1],[0],[c[0]],[c[1]],[c[2]],[0],[lx,ly,lz],[0,-1,0]]);
                         }
     
                     }

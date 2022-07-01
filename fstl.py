@@ -37,7 +37,7 @@ for path in paths:
         lt += "["+fctl[i][0]+","+fctl[i][1]+","+fctl[i][2]+"],["+fctl[i][3]+","+fctl[i][4]+","+fctl[i][5]+"],["+fctl[i][6]+","+fctl[i][7]+","+fctl[i][8]+"],"
         lt += color
         lt += "[0],"
-        lt += "[0,0,0],"
+        lt += "[0,0,0],[0,0,1],"
         lt += '],'
 
 lt += "]];\n"
