@@ -84,7 +84,7 @@
         console.log(fmaze)
     }
 
-    function makeflmove(blks) {
+    function makeflmove() {
         x = blks[0].length;
         y = blks.length;
         z = blks[0][0].length;
@@ -98,5 +98,5 @@
                 }
             }
         }
-        return ret
+        flmove = ret
     }

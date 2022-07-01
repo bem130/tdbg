@@ -98,21 +98,23 @@
 <script>
 
 function tick() {
-    viewangle()
-    action()
-    action()
+    if (scenename=="game") {
+        viewangle()
+        action()
+        action()
+    }
     mkimg()
 }
 
 var illumination = [0,0,1]
 var gamestarttime = Date.now()
 var f_fall = true;
-var selectpos = [0,0,0]
+var selectpos = [null,null,null]
 
 function startnew() {
     worldsize = [15,15,10]
     makeworld(worldsize[0],worldsize[1],worldsize[2]);
-    flmove = makeflmove(blks)
+    makeflmove()
     worldstart = [1,1,1];
     datato3d();
 }
@@ -238,14 +240,14 @@ let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),disp
 function makeobj() {
     obj = [];
     scene[scenename][1] = addLen(scene[scenename][1]);
-    if (cframe%5==0) {
+    if (cframe%2==0) {
         scene[scenename][1] = sortP(scene[scenename][1]);
     }
     
     obj = obj.concat(scene[scenename][1])
 
     obj = addLen(obj);
-    if (cframe%5==0) {
+    if (cframe%2==0) {
         obj = sortP(obj);
     }
     return obj;
@@ -338,9 +340,29 @@ function eachchange(arr,mx,my,mz,rz) {
             }
         }
         {
-                                iarr[center_index+0] = 0;
-                                iarr[center_index+1] = 0;
-                                iarr[center_index+2] = 0;
+            cursor = [
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,1,1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,1,1,-1,-1,-1,-1,],
+                [-1,-1,1,1,1,1,1,1,-1,-1,],
+                [-1,-1,1,1,1,1,1,1,-1,-1,],
+                [-1,-1,-1,-1,1,1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,1,1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+            ]
+            let csi = center_index;
+            for (let csry=0;csry<10;csry++) {
+                for (let csrx=0;csrx<10;csrx++) {
+                    if (cursor[csry][csrx]>=0) {
+                        index = ((csry)*x+(csrx))*4+center_index; // index of position [ix,iy]
+                        iarr[index+0] = cursor[csry][csrx]*245;
+                        iarr[index+1] = cursor[csry][csrx]*222;
+                        iarr[index+2] = cursor[csry][csrx]*179;
+                    }
+                }
+            }
         }
         ctx.putImageData(new ImageData(iarr,x,y),0,0);
         fps = (Date.now() - startTime) / 1000;
@@ -511,6 +533,9 @@ function eachchange(arr,mx,my,mz,rz) {
 
 // keyboard
 document.onkeydown = function(e) {
+    if (event.keyCode==114) {
+        e.returnValue = false;
+    }
     keystatus_d[event.keyCode] = true;
     keys = Object.keys(keystatus_d);
     for (i=0;i<keys.length;i++) {
@@ -627,18 +652,21 @@ function updateangle(x,y) {
 document.addEventListener('mouseup', logMouseButton); // マウスのボタン
 
 function logMouseButton(e) {
-  if (typeof e === 'object') {
-    switch (e.button) {
-      case 0:
-        break;
-      case 1:
-        break;
-      case 2:
-        console.log("right btn")
-        console.log("break:" +selectpos)
-        break;
+    if (typeof e === 'object') {
+        switch (e.button) {
+        case 0:
+            break;
+        case 1:
+            break;
+        case 2:
+            console.log("right btn")
+            console.log("break:" +selectpos)
+            blks[selectpos[1]][selectpos[0]][selectpos[2]] = 0
+            datato3d()
+            makeflmove()
+            break;
+        }
     }
-  }
 }
 
 function move(l) {
