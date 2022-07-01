@@ -138,16 +138,15 @@ function startgame() {
 function startmenu() {
     document.exitPointerLock();
     f_fall = false;
-    drsel.value = "HD";
+    drsel.value = "FHD";
     despl();
     changescene("title");
     illumination = [40,10,20];
-    plyr_stat[0] = [1,-4,-1];
-    cam_prop[1] = [242,2,10];
+    plyr_stat[0] = [0,-5,-1];
     cam_prop[0][0] = plyr_stat[0][0] // カメラの設定
     cam_prop[0][1] = plyr_stat[0][1] // カメラの設定
     cam_prop[0][2] = plyr_stat[0][2] + cam_h // カメラの設定
-    cam_prop[1][0] = 251
+    cam_prop[1][0] = 247
     cam_prop[1][1] = 0
     scene[scenename][1] = addLen(scene[scenename][1]);
     scene[scenename][1] = sortP(scene[scenename][1]);
@@ -291,9 +290,10 @@ function eachchange(arr,mx,my,mz,rz) {
         x = cam_prop[3][0];
         y = cam_prop[3][1];
         center_index = (Math.floor(y/2)*x+Math.floor(x/2))*4;
+        center_indexp = (Math.floor(y/2)*x+Math.floor(x/2))*6;
         co.height=y;co.width=x;
         let iarr = new Uint8ClampedArray(x*y*4);
-        let blkps = new Uint8ClampedArray(x*y*4);
+        let blkps = new Uint8ClampedArray(x*y*6).fill(0);
         let zbuf = new Uint8Array(x*y).fill(0);
         for (let i = 0; i < x*y; i++) {
             let index = (i)*4; // index of position [ix,iy]
@@ -339,16 +339,18 @@ function eachchange(arr,mx,my,mz,rz) {
                                 iarr[index+1] = t[5][0]*light;
                                 iarr[index+2] = t[6][0]*light;
 
+                                index = ((iy)*x+(ix))*6; // index of position [ix,iy]
                                 blkps[index+0] = t[8][0];
                                 blkps[index+1] = t[8][1];
                                 blkps[index+2] = t[8][2];
+                                blkps[index+4] = 1
                             }
                         }
                     }
                 }
             }
         }
-        {
+        if (scenename=="game"){
             cursor = [
                 [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
                 [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
@@ -361,7 +363,6 @@ function eachchange(arr,mx,my,mz,rz) {
                 [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
                 [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
             ]
-            let csi = center_index;
             for (let csry=0;csry<10;csry++) {
                 for (let csrx=0;csrx<10;csrx++) {
                     if (cursor[csry][csrx]>=0) {
@@ -376,8 +377,12 @@ function eachchange(arr,mx,my,mz,rz) {
         ctx.putImageData(new ImageData(iarr,x,y),0,0);
         fps = (Date.now() - startTime) / 1000;
         startTime = Date.now();
-        console.log(blkps[center_index+0],blkps[center_index+1],blkps[center_index+2])
-        selectpos = [blkps[center_index+0],blkps[center_index+1],blkps[center_index+2]]
+        if (blkps[center_indexp+4]!=0) {
+            selectpos = [blkps[center_indexp+0],blkps[center_indexp+1],blkps[center_indexp+2]]
+        }
+        else {
+            selectpos = [null,null,null]
+        }
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
         setTimeout(tick,20);
     }

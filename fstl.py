@@ -2,7 +2,7 @@ from numpy import double
 from scipy.misc import face
 
 paths = [
-    ["./haruk1234web3d.stl",[250,150,80],[-5,-10,1]],
+    ["./title.stl",[250,150,80],[-5,-10,1]],
     ["./human.stl",[220,200,200],[-4,-10,0.5]],
 ]
 lt = ""
