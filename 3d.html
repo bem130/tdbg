@@ -97,6 +97,24 @@
 <script src="makeworld.js"></script>
 <script>
 
+{
+    var userAgent = window.navigator.userAgent.toLowerCase();
+    if(userAgent.indexOf('iphone') != -1) {
+        console.log('iPhone');
+    } else if(userAgent.indexOf('ipad') != -1) {
+        console.log('iPad');
+    } else if(userAgent.indexOf('android') != -1) {
+        if(userAgent.indexOf('mobile') != -1) {
+            console.log('Android smartphone');
+        } else {
+            console.log('Android tablet');
+        }
+    }
+    else {
+        console.log("desktop")
+    }
+}
+
 function tick() {
     if (scenename=="game") {
         viewangle()
@@ -181,7 +199,6 @@ function lockChangeAlert(e) {
         mspos = false
         updatePosition(e)
     }
-    console.log()
 }
 
 
@@ -293,7 +310,7 @@ function eachchange(arr,mx,my,mz,rz) {
         x = cam_prop[3][0];
         y = cam_prop[3][1];
         center_index = (Math.floor(y/2)*x+Math.floor(x/2))*4;
-        center_indexp = (Math.floor(y/2)*x+Math.floor(x/2))*6;
+        center_indexp = (Math.floor(y/2)*x+Math.floor(x/2))*9;
         co.height=y;co.width=x;
         let iarr = new Uint8ClampedArray(x*y*4);
         let blkps = new Uint8ClampedArray(x*y*6).fill(0);
@@ -342,11 +359,14 @@ function eachchange(arr,mx,my,mz,rz) {
                                 iarr[index+1] = t[5][0]*light;
                                 iarr[index+2] = t[6][0]*light;
 
-                                index = ((iy)*x+(ix))*6; // index of position [ix,iy]
+                                index = ((iy)*x+(ix))*9; // index of position [ix,iy]
                                 blkps[index+0] = t[8][0];
                                 blkps[index+1] = t[8][1];
                                 blkps[index+2] = t[8][2];
-                                blkps[index+4] = 1
+                                blkps[index+3] = t[8][0]+t[9][0];
+                                blkps[index+4] = t[8][1]+t[9][1];
+                                blkps[index+5] = t[8][2]+t[9][2];
+                                blkps[index+6] = 1
                             }
                         }
                     }
@@ -380,11 +400,17 @@ function eachchange(arr,mx,my,mz,rz) {
         ctx.putImageData(new ImageData(iarr,x,y),0,0);
         fps = (Date.now() - startTime) / 1000;
         startTime = Date.now();
-        if (blkps[center_indexp+4]!=0) {
+        if (blkps[center_indexp+6]!=0) {
             selectpos = [blkps[center_indexp+0],blkps[center_indexp+1],blkps[center_indexp+2]]
         }
         else {
             selectpos = [null,null,null]
+        }
+        if (selectpos[0]!=null) {
+            setpos = [blkps[center_indexp+3],blkps[center_indexp+4],blkps[center_indexp+5]]
+        }
+        else {
+            setpos = [null,null,null]
         }
         document.getElementById("show_fps").innerHTML = ((1/fps).toString()).substring(0,5);
         setTimeout(tick,30);
@@ -683,6 +709,11 @@ function logMouseButton(e) {
     if (typeof e === 'object') {
         switch (e.button) {
         case 0:
+            console.log("left btn")
+            console.log("set:" +setpos)
+            blks[setpos[1]][setpos[0]][setpos[2]] = 2
+            datato3d()
+            makeflmove()
             break;
         case 1:
             break;

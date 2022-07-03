@@ -81,7 +81,7 @@
                 }
             }
         }
-        console.log(fmaze)
+        // console.log(fmaze)
     }
 
     function makeflmove() {
