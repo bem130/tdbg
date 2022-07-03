@@ -3,7 +3,7 @@ from scipy.misc import face
 
 paths = [
     ["./title.stl",[250,150,80],[-5,-10,1]],
-    ["./human.stl",[220,200,200],[-4,-10,0.5]],
+    ["./human.stl",[220,200,200],[-4,-10,1]],
 ]
 lt = ""
 
@@ -25,9 +25,9 @@ for path in paths:
         if (l.startswith("vertex")):
             c+=1
             ld = l.replace("\n","").split(" ")
-            lfctl.append(str(double(ld[1])+path[2][0]))
-            lfctl.append(str(double(ld[2])+path[2][1]))
-            lfctl.append(str(double(ld[3])+path[2][2]))
+            lfctl.append(str( int((double(ld[1])+path[2][0])*100)/100 ))
+            lfctl.append(str( int((double(ld[2])+path[2][1])*100)/100 ))
+            lfctl.append(str( int((double(ld[3])+path[2][2])*100)/100 ))
             if (c%3==0):
                 fctl.append(lfctl)
                 # print(lfctl)
