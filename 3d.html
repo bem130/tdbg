@@ -59,6 +59,16 @@
                                 <td><button onclick="updateangle(0,3)" style="width: 100%;">↓</button></td>
                             </tr>
                             <tr>
+                                <td><button onclick="MouseB({button:2})" style="width: 100%;">設置</button></td>
+                                <td><center>ブロック</center></td>
+                                <td><button onclick="MouseB({button:0})" style="width: 100%;">破壊</button></td>
+                            </tr>
+                            <tr>
+                                <td><button onclick="keyw_f[90]()" style="width: 100%;">↑</button></td>
+                                <td><center>アイテム</center></td>
+                                <td><button onclick="keyw_f[67]()" style="width: 100%;">↓</button></td>
+                            </tr>
+                            <tr>
                                 <td><button onclick="cam_prop[2][0]+=5" style="width: 100%;">↑</button></td>
                                 <td><center>視野角</center></td>
                                 <td><button onclick="cam_prop[2][0]-=5" style="width: 100%;">↓</button></td>
@@ -641,11 +651,8 @@ document.onkeydown = function(e) {
         e.returnValue = false;
     }
     keystatus_d[event.keyCode] = true;
-    keys = Object.keys(keystatus_d);
-    for (i=0;i<keys.length;i++) {
-        if (keys[i] in keyw_f) {
-            keyw_f[keys[i]]();
-        }
+    if (event.keyCode in keyw_f) {
+        keyw_f[event.keyCode]();
     }
 };
 document.onkeyup = function(e) {
@@ -655,12 +662,12 @@ document.onkeyup = function(e) {
 
 let keyw = {} // 通常
 {
-    keyw[87] = ()=>move(0.1);
-    keyw[83] = ()=>move(-0.1);
-    keyw[65] = ()=>updateangle(-2,0);
-    keyw[68] = ()=>updateangle(2,0);
-    keyw[82] = ()=>updateangle(0,-2);
-    keyw[70] = ()=>updateangle(0,2);
+    keyw[87] = ()=>move(0.3);
+    keyw[83] = ()=>move(-0.3);
+    keyw[65] = ()=>updateangle(-5,0);
+    keyw[68] = ()=>updateangle(5,0);
+    keyw[82] = ()=>updateangle(0,-4);
+    keyw[70] = ()=>updateangle(0,4);
     keyw[32] = function() {
         if (scenename=="game") {
             plyr_stat[1][0] = true;
@@ -677,21 +684,21 @@ let keyw = {} // 通常
 }
 let keyw_s = {} // shift押し中
 {
-    keyw_s[87] = ()=>move(0.4);
-    keyw_s[83] = ()=>move(-0.4);
-    keyw[65] = ()=>updateangle(-5,0);
-    keyw[68] = ()=>updateangle(5,0);
-    keyw[82] = ()=>updateangle(0,-4);
-    keyw[70] = ()=>updateangle(0,4);
+    keyw_s[87] = ()=>move(0.7);
+    keyw_s[83] = ()=>move(-0.7);
+    keyw_s[65] = ()=>updateangle(-7,0);
+    keyw_s[68] = ()=>updateangle(7,0);
+    keyw_s[82] = ()=>updateangle(0,-6);
+    keyw_s[70] = ()=>updateangle(0,6);
 }
 let keyw_f = {} // イベント取得時
 {
-    keyw[90] = function() {
+    keyw_f[90] = function() {
         if (seii>0) {
             seii--
         }
     };
-    keyw[67] = function() {
+    keyw_f[67] = function() {
         if (seii<selitems.length-1) {
             seii++;
         }
@@ -774,13 +781,11 @@ function updateangle(x,y) {
 }
 
 document.oncontextmenu = function () {return false;}
-document.addEventListener('mousedown', logMouseButton); // マウスのボタン
-function logMouseButton(e) {
+cnvs.addEventListener('mousedown', MouseB); // マウスのボタン
+function MouseB(e) {
     if (typeof e === 'object') {
         switch (e.button) {
         case 0:
-            console.log("left btn")
-            console.log("break:" +selectpos)
             blks[selectpos[1]][selectpos[0]][selectpos[2]] = 0
             datato3d()
             makeflmove()
@@ -788,8 +793,6 @@ function logMouseButton(e) {
         case 1:
             break;
         case 2:
-            console.log("right btn")
-            console.log("set:" +setpos)
             blks[setpos[1]][setpos[0]][setpos[2]] = selectingitm
             datato3d()
             makeflmove()
@@ -823,7 +826,7 @@ function move(l) {
 
 function fall() {
     if (f_fall) {
-        for (c=0;c<5;c++) {
+        for (c=0;c<4;c++) {
             acfr+=0.2;
             bfx = plyr_stat[0][0];
             bfy = plyr_stat[0][1];
