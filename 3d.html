@@ -141,14 +141,6 @@ var plocka = true
         document.getElementById("mousevm").onclick = function () {
             if (plocka) {
                 document.exitPointerLock()
-                cnvs.onclick = function() {}
-            }
-            else {
-                cnvs.onclick = function() {
-                    if (scenename=="game") {
-                        cnvs.requestPointerLock();
-                    }
-                }
             }
             plocka = document.getElementById("mousevm").checked
         }
@@ -224,11 +216,6 @@ window.onload = function() {
     if (plocka) {
         cnvs.requestPointerLock = cnvs.requestPointerLock || cnvs.mozRequestPointerLock;
         document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
-        cnvs.onclick = function() {
-            if (scenename=="game") {
-                cnvs.requestPointerLock();
-            }
-        }
         document.addEventListener('pointerlockchange', lockChangeAlert);
         document.addEventListener('mozpointerlockchange', lockChangeAlert);
     }
@@ -625,9 +612,12 @@ function eachchange(arr,mx,my,mz,rz) {
             ["red",2,[255,0,0]],
             ["green",3,[0,255,0]],
             ["blue",4,[0,0,255]],
+            ["yellow",5,[255,255,0]],
+            ["cyan",6,[0,255,255]],
+            ["magenta",7,[255,0,255]],
         ]
         selectingitm = selitems[seii][1]
-        for (let csry=0;csry<35*4+1;csry++) {
+        for (let csry=0;csry<35*selitems.length+1;csry++) {
             for (let csrx=0;csrx<40;csrx++) {
                 index = ((10+csry)*x+(10+csrx))*4; // index of position [ix,iy]
                 iarr[index+0] = 200;
@@ -700,6 +690,9 @@ let keyw = {} // 通常
     keyw[32] = function() {
         if (scenename=="game") {
             plyr_stat[1][0] = true;
+            if (plocka) {
+                cnvs.requestPointerLock();
+            }
         }
         else if (scenename=="title") {
             startnew();startgame();
