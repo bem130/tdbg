@@ -141,7 +141,14 @@ var plocka = true
         document.getElementById("mousevm").onclick = function () {
             if (plocka) {
                 document.exitPointerLock()
-        cnvs.onclick = function() {}
+                cnvs.onclick = function() {}
+            }
+            else {
+                cnvs.onclick = function() {
+                    if (scenename=="game") {
+                        cnvs.requestPointerLock();
+                    }
+                }
             }
             plocka = document.getElementById("mousevm").checked
         }
