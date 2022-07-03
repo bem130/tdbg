@@ -3,7 +3,7 @@
     function makeworld(x,y,z) { // size x,y,z
         blks = Array.from(Array(y),_=>Array.from(Array(x),_=>Array(z).fill(0)));
         for (i=0;i<200;i++) {
-            blks[Math.floor(Math.random()*y)][Math.floor(Math.random()*x)][Math.floor(Math.random()*(z-1)+1)] = Math.floor(Math.random()*4)+1
+            //blks[Math.floor(Math.random()*y)][Math.floor(Math.random()*x)][Math.floor(Math.random()*(z-1)+1)] = Math.floor(Math.random()*4)+1
         }
         blkd = [
             // [],

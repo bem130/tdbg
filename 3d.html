@@ -97,6 +97,8 @@
 <script src="makeworld.js"></script>
 <script>
 
+var plocka = true
+
 {
     var userAgent = window.navigator.userAgent.toLowerCase();
     if(userAgent.indexOf('iphone') != -1) {
@@ -118,6 +120,7 @@
 function tick() {
     if (scenename=="game") {
         viewangle()
+        keyinput();
         action()
         action()
     }
@@ -130,7 +133,7 @@ var f_fall = true;
 var selectpos = [null,null,null]
 
 function startnew() {
-    worldsize = [20,20,10]
+    worldsize = [20,20,20]
     makeworld(worldsize[0],worldsize[1],worldsize[2]);
     makeflmove()
     worldstart = [1,1,1];
@@ -154,7 +157,9 @@ function startgame() {
 }
 
 function startmenu() {
-    document.exitPointerLock();
+    if (plocka) {
+        document.exitPointerLock();
+    }
     f_fall = false;
     drsel.value = "FHD";
     despl();
@@ -177,19 +182,21 @@ let cnvs = document.getElementById("imgOut");
 window.onload = function() {
     startmenu();
     setTimeout(mkimg,100);
-    cnvs.requestPointerLock = cnvs.requestPointerLock || cnvs.mozRequestPointerLock;
-    document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
-}
-cnvs.onclick = function() {
-    if (scenename=="game") {
-        cnvs.requestPointerLock();
+    if (plocka) {
+        cnvs.requestPointerLock = cnvs.requestPointerLock || cnvs.mozRequestPointerLock;
+        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+        cnvs.onclick = function() {
+            if (scenename=="game") {
+                cnvs.requestPointerLock();
+            }
+        }
+        document.addEventListener('pointerlockchange', lockChangeAlert);
+        document.addEventListener('mozpointerlockchange', lockChangeAlert);
     }
 }
-
-
-document.addEventListener('pointerlockchange', lockChangeAlert);
-document.addEventListener('mozpointerlockchange', lockChangeAlert);
 document.onmousemove = updatePosition
+
+
 
 var mspos = false
 function lockChangeAlert(e) {
@@ -200,7 +207,6 @@ function lockChangeAlert(e) {
         updatePosition(e)
     }
 }
-
 
 var flmove = [[]]
 let cam_prop = [
@@ -214,9 +220,9 @@ let plyr_stat = [
     [false,0,0], //jumping started-frame started-height
 ]
 cam_h = 2.5
+var seii = 0
 
 let display_list = { // "name": [width,height,aspectraito(w),aspectraito(h),displayscale]
-        "112 63": [112,63,16,9],
         "QQVGA": [160,120,4,3],
         "QVGA": [320,240,4,3],
         "HVGA": [480,320,3,2],
@@ -396,6 +402,7 @@ function eachchange(arr,mx,my,mz,rz) {
                     }
                 }
             }
+            itemselect(iarr)
         }
         ctx.putImageData(new ImageData(iarr,x,y),0,0);
         fps = (Date.now() - startTime) / 1000;
@@ -573,6 +580,60 @@ function eachchange(arr,mx,my,mz,rz) {
         }
     }
 
+    function itemselect(iarr) {
+        selitems = [
+            ["white",1,[255,255,255]],
+            ["red",2,[255,0,0]],
+            ["green",3,[0,255,0]],
+            ["blue",4,[0,0,255]],
+        ]
+        selectingitm = selitems[seii][1]
+        for (let csry=0;csry<35*4+1;csry++) {
+            for (let csrx=0;csrx<40;csrx++) {
+                index = ((10+csry)*x+(10+csrx))*4; // index of position [ix,iy]
+                iarr[index+0] = 200;
+                iarr[index+1] = 200;
+                iarr[index+2] = 200;
+            }
+        }
+
+        for (let i=0;i<selitems.length;i++) {
+            for (let csry=0;csry<32;csry++) {
+                for (let csrx=0;csrx<32;csrx++) {
+                    index = ((35*i+12+csry)*x+(12+csrx))*4; // index of position [ix,iy]
+                    iarr[index+0] = selitems[i][2][0];
+                    iarr[index+1] = selitems[i][2][1];
+                    iarr[index+2] = selitems[i][2][2];
+                }
+            }
+        }
+
+        
+        let cursor = [
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,1,1,-1,-1,-1,],
+                [-1,-1,-1,-1,1,1,1,-1,-1,-1,],
+                [-1,-1,-1,1,1,1,1,-1,-1,-1,],
+                [-1,-1,-1,1,1,1,1,-1,-1,-1,],
+                [-1,-1,-1,-1,1,1,1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,1,1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+                [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,],
+            ]
+            for (let csry=0;csry<10;csry++) {
+                for (let csrx=0;csrx<10;csrx++) {
+                    if (cursor[csry][csrx]>=0) {
+                        index = ((csry+35*seii+23)*x+(csrx+42))*4; // index of position [ix,iy]
+                        iarr[index+0] = cursor[csry][csrx]*0;
+                        iarr[index+1] = cursor[csry][csrx]*0;
+                        iarr[index+2] = cursor[csry][csrx]*0;
+                    }
+                }
+            }
+
+    }
+
 
 // keyboard
 document.onkeydown = function(e) {
@@ -625,6 +686,16 @@ let keyw_s = {} // shift押し中
 }
 let keyw_f = {} // イベント取得時
 {
+    keyw[90] = function() {
+        if (seii>0) {
+            seii--
+        }
+    };
+    keyw[67] = function() {
+        if (seii<selitems.length-1) {
+            seii++;
+        }
+    };
 }
 
 
@@ -656,7 +727,6 @@ function keyinput() {
 bff = true; // 前フレームで床があるか
 acfr = 0;
 function action() {
-    keyinput();
 
     fall()
     
@@ -703,15 +773,15 @@ function updateangle(x,y) {
   // console.log("view angle:"+[ptX,ptY])
 }
 
-document.addEventListener('mouseup', logMouseButton); // マウスのボタン
-
+document.oncontextmenu = function () {return false;}
+document.addEventListener('mousedown', logMouseButton); // マウスのボタン
 function logMouseButton(e) {
     if (typeof e === 'object') {
         switch (e.button) {
         case 0:
             console.log("left btn")
-            console.log("set:" +setpos)
-            blks[setpos[1]][setpos[0]][setpos[2]] = 2
+            console.log("break:" +selectpos)
+            blks[selectpos[1]][selectpos[0]][selectpos[2]] = 0
             datato3d()
             makeflmove()
             break;
@@ -719,8 +789,8 @@ function logMouseButton(e) {
             break;
         case 2:
             console.log("right btn")
-            console.log("break:" +selectpos)
-            blks[selectpos[1]][selectpos[0]][selectpos[2]] = 0
+            console.log("set:" +setpos)
+            blks[setpos[1]][setpos[0]][setpos[2]] = selectingitm
             datato3d()
             makeflmove()
             break;
