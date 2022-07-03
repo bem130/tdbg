@@ -82,6 +82,14 @@
                                 </td>
                                 <td></td>
                             </tr>
+                            <tr>
+                                <td></td>
+                                <td><center>マウス視点操作</center></td>
+                                <td>
+                                    <input type="checkbox" id="mousevm">
+                                </td>
+                                <td></td>
+                            </tr>
                         </table>
                     </details>
                 </div>
@@ -108,22 +116,35 @@
 <script>
 
 var plocka = true
-
 {
     var userAgent = window.navigator.userAgent.toLowerCase();
     if(userAgent.indexOf('iphone') != -1) {
         console.log('iPhone');
+        plocka = false
     } else if(userAgent.indexOf('ipad') != -1) {
         console.log('iPad');
+        plocka = false
     } else if(userAgent.indexOf('android') != -1) {
         if(userAgent.indexOf('mobile') != -1) {
             console.log('Android smartphone');
+            plocka = false
         } else {
             console.log('Android tablet');
+            plocka = false
         }
     }
     else {
         console.log("desktop")
+    }
+    {
+        document.getElementById("mousevm").checked = plocka
+        document.getElementById("mousevm").onclick = function () {
+            if (plocka) {
+                document.exitPointerLock()
+        cnvs.onclick = function() {}
+            }
+            plocka = document.getElementById("mousevm").checked
+        }
     }
 }
 
@@ -133,6 +154,7 @@ function tick() {
         keyinput();
         action()
         action()
+        console.log(plocka)
     }
     mkimg()
 }
