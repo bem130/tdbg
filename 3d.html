@@ -759,6 +759,17 @@ function keyinput() {
         }
     }
 }
+function itch(event) {
+    event.preventDefault();
+    if (event.deltaY>0) {
+        keyw_f[67]()
+    }
+    else {
+        keyw_f[90]()
+    }
+}
+document.onwheel = itch
+
 
 bff = true; // 前フレームで床があるか
 acfr = 0;
